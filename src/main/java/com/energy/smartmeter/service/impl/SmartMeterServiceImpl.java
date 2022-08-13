@@ -12,7 +12,9 @@ import com.energy.smartmeter.entity.SmartMeter;
 import com.energy.smartmeter.service.SmartMeterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -45,15 +47,15 @@ public class SmartMeterServiceImpl implements SmartMeterService {
                         smartMeterDao.addSmartMeter(smartMeter);
                         return "Smart meter added successfully";
                     } else {
-                       return "provider does not exist";
+                       throw new Exception("provider does not exist");
                     }
 
 
                 } else {
-                    return "Username does not exists";
+                    throw new Exception("Username does not exists");
                 }
             } else {
-                return "Smart meter already present";
+                throw new Exception("Smart meter already present");
             }
 
         } catch (Exception e) {
@@ -69,20 +71,6 @@ public class SmartMeterServiceImpl implements SmartMeterService {
        try {
            if(Objects.nonNull(smartMeterDao.findSmartMeter(meterId))) {
                smartMeterDao.updateSmartMeterReading(meterId, readingDto);
-
-
-//               SmartMeter smartMeter = smartMeterDao.findSmartMeter(meterId);
-//               String provider = smartMeter.getProvider();
-//               List<Integer> readings = smartMeter.getReadings();
-//               Provider providerData = smartMeterDao.findProvider(provider);
-//               Integer totalReadings = readings.size();
-//               if(totalReadings > 0) {
-//
-//               } else {
-//                   readings.add(providerData.getRate());
-//               }
-//               System.out.println(readings);
-//               return providerData;
            }
        } catch (Exception e) {
            throw new Exception("Internal server error");
@@ -104,13 +92,13 @@ public class SmartMeterServiceImpl implements SmartMeterService {
                         return "Smart meter approved";
                     }
                     smartMeterDao.updateStatus(smartMeter.getMeterId(), "REJECTED");
-                    return "Smart meter rejected";
+                    throw new Exception("Smart meter rejected");
 
                 } else if(smartMeter.getStatus().equals("NEWLY_ADDED") && !updateStatus.getNewMeter()) {
-                    return "Smart meter not installed for enable/disable";
+                    throw new Exception("Smart meter not installed for enable/disable");
                 }
                 else if (!smartMeter.getStatus().equals("NEWLY_ADDED") && updateStatus.getNewMeter()){
-                    return "Smart meter already exist";
+                    throw new Exception("Smart meter already exist");
                 } else {
                     smartMeterDao.updateStatus(smartMeter.getMeterId(), updateStatus.getStatus());
                     return updateStatus + "successfully";
@@ -129,10 +117,10 @@ public class SmartMeterServiceImpl implements SmartMeterService {
                     smartMeterDao.changeProvider(smartMeterId, providerName);
                     return "Provider changed successfully";
                 } else {
-                    return "Provider is disabled contact admin";
+                    throw new Exception("Provider is disabled contact admin");
                 }
             } else {
-                return "Smart meter or provider does not exist";
+                throw new Exception("Smart meter or provider does not exist");
             }
         } catch (Exception e) {
             throw new Exception("Internal server error");
@@ -162,14 +150,42 @@ public class SmartMeterServiceImpl implements SmartMeterService {
             System.out.println(meterId);
             HashMap<String, String> meter = new HashMap<>();
             SmartMeter smartMeter = smartMeterDao.findSmartMeter(meterId);
-            System.out.println(smartMeter);
             meter.put("meterId", smartMeter.getMeterId());
             meter.put("username", smartMeter.getUsername());
             meter.put("provider", smartMeter.getProvider());
             meter.put("status", smartMeter.getStatus());
             smartMeters.add(meter);
         }
-        System.out.println(smartMeters);
         return smartMeters;
+    }
+
+    @Override
+    public Double calculate(String meterId) throws Exception {
+        try {
+            SmartMeter smartMeter = smartMeterDao.findSmartMeter(meterId);
+            List<ReadingDto> readings = smartMeter.getReadings();
+            Integer previousTime = 0;
+            Double totalReading = 0.0;
+            for(int i = 1; i<readings.size(); i++) {
+                if(readings.get(i).getTime() != null) {
+                    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                    Date date1 = format.parse(readings.get(previousTime).getTime());
+                    Date date2 = format.parse(readings.get(i).getTime());
+                    long difference = date2.getTime() - date1.getTime();
+                    double seconds = difference/1000.0;
+                    double hours = seconds/(60.0 * 60.0);
+                    Double kw = readings.get(i).getKw() + 0.0;
+                    Provider provider = adminDao.findProvider(readings.get(i).getProvider());
+                    totalReading += (kw * hours) * provider.getRate();
+                    System.out.println("total Reading" +"  " +totalReading);
+                    previousTime+=1;
+                } else {
+                    throw new Exception("Value not found");
+                }
+            }
+            return totalReading;
+        } catch (HttpClientErrorException.NotFound e) {
+            throw new Exception("smart meter not found");
+        }
     }
 }  

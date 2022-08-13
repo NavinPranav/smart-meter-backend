@@ -65,7 +65,6 @@ public class AdminDaoImpl implements AdminDao {
         update.set("active", status);
         mongoTemplate.updateFirst(query,update, Provider.class);
     }
-
     @Override
     public List<Admin> getAllAdmins() {
         return mongoTemplate.findAll(Admin.class);

@@ -76,8 +76,6 @@ public class ConsumerController {
         } catch (Exception e) {
             return new ResponseEntity<ApiResponse>(response, HttpStatus.BAD_REQUEST);
         }
-
-
     }
 
 }

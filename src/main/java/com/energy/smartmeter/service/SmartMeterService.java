@@ -6,6 +6,7 @@ import com.energy.smartmeter.dto.SmartMeterDto;
 import com.energy.smartmeter.dto.Status;
 import com.energy.smartmeter.entity.SmartMeter;
 
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,5 +24,7 @@ public interface SmartMeterService {
     SmartMeter getById(String id) throws Exception;
 
     List<HashMap<String, String>> getSmartMeterById(String id);
+
+    Double calculate(String meterId) throws Exception;
 
 }

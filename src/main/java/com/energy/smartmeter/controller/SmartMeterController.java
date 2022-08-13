@@ -104,4 +104,12 @@ public class SmartMeterController {
         response.setData(smartMeters);
         return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
     }
+
+    @GetMapping("calculate/{meterId}")
+    public ResponseEntity<ApiResponse> calculate(@PathVariable String meterId) throws Exception {
+        ApiResponse response = new ApiResponse();
+        response.setData(smartMeterService.calculate(meterId));
+        return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
+    }
+
 }
