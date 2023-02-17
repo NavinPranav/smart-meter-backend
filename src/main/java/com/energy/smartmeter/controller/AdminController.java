@@ -28,9 +28,9 @@ public class AdminController {
             String logMessage = energyManagementService.adminLogin(adminDto);
             response.setMessage(logMessage);
             HttpHeaders httpHeaders = new HttpHeaders();
-            response.setData(jwtUtility.generateToken(adminDto, 10*60*60));
-            httpHeaders.set("jwttoken",jwtUtility.generateToken(adminDto, 10*60*60));
-            return new ResponseEntity<ApiResponse>(response,httpHeaders,HttpStatus.OK);
+            response.setData(jwtUtility.generateToken(adminDto, 10 * 60 * 60));
+            httpHeaders.set("jwttoken", jwtUtility.generateToken(adminDto, 10 * 60 * 60));
+            return new ResponseEntity<ApiResponse>(response, httpHeaders, HttpStatus.OK);
         } catch (Exception e) {
             response.setMessage(String.valueOf(e));
             return new ResponseEntity<ApiResponse>(response, HttpStatus.BAD_REQUEST);
@@ -40,7 +40,7 @@ public class AdminController {
     @PostMapping("/add-admin")
     public ResponseEntity<ApiResponse> addAdmin(@RequestHeader(value = "authorization") String auth, @RequestBody AdminDto adminDto) {
         ApiResponse response = new ApiResponse();
-        if(jwtUtility.validateAdminToken(auth)) {
+        if (jwtUtility.validateAdminToken(auth)) {
             try {
                 energyManagementService.addAdmin(adminDto);
                 response.setMessage("Admin created successfully");
@@ -58,10 +58,11 @@ public class AdminController {
     @PostMapping("/add-provider")
     public ResponseEntity<ApiResponse> addProvider(@RequestHeader(value = "authorization") String auth, @RequestBody ProviderDto providerDto) {
         ApiResponse response = new ApiResponse();
-        if(jwtUtility.validateAdminToken(auth)) {
+        if (jwtUtility.validateAdminToken(auth)) {
             try {
                 energyManagementService.addProvider(providerDto);
                 response.setMessage("Provider created successfully");
+                response.setData(energyManagementService.getAllProviders());
                 return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
             } catch (Exception e) {
                 response.setMessage(String.valueOf(e));
@@ -86,6 +87,7 @@ public class AdminController {
         ApiResponse response = new ApiResponse();
         try {
             energyManagementService.changeProviderStatus(providerName, provider.getActive());
+            response.setData(energyManagementService.getAllProviders());
             response.setMessage("Operation done");
             return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
         } catch (Exception e) {
@@ -103,6 +105,8 @@ public class AdminController {
         } else {
             return new ResponseEntity<ApiResponse>(response, HttpStatus.BAD_REQUEST);
         }
+
+
     }
 
- }
+}

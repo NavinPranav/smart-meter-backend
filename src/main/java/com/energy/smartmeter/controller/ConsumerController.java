@@ -26,7 +26,7 @@ public class ConsumerController {
     @PostMapping("/create")
     public ResponseEntity<ApiResponse> createConsumer(@RequestHeader(value = "authorization") String auth, @RequestBody ConsumerDto consumerDto) {
         ApiResponse response = new ApiResponse();
-        if(jwtUtility.validateAdminToken(auth)) {
+        if (jwtUtility.validateAdminToken(auth)) {
             try {
                 consumerService.addConsumer(consumerDto);
                 response.setMessage("Consumer created successfully");
@@ -46,10 +46,10 @@ public class ConsumerController {
         try {
             Consumer consumer = consumerService.consumerLogin(consumerDto);
             response.setMessage("Logged in successfully");
-            response.setData(jwtUtility.generateToken(consumerDto,10*60*60));
+            response.setData(consumer);
             HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.set("jwttoken",jwtUtility.generateToken(consumerDto, 10*60*60));
-            return new ResponseEntity<ApiResponse>(response,httpHeaders ,HttpStatus.OK);
+            httpHeaders.set("jwttoken", jwtUtility.generateToken(consumerDto, 10 * 60 * 60));
+            return new ResponseEntity<ApiResponse>(response, httpHeaders, HttpStatus.OK);
         } catch (Exception e) {
             response.setMessage(String.valueOf(e));
             return new ResponseEntity<ApiResponse>(response, HttpStatus.BAD_REQUEST);
@@ -69,7 +69,6 @@ public class ConsumerController {
         ApiResponse response = new ApiResponse();
         try {
             Consumer consumer = consumerService.getConsumer(id);
-            System.out.println(consumer);
             response.setData(consumer);
             return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
 

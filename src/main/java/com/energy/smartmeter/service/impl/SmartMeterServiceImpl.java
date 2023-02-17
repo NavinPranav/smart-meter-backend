@@ -67,7 +67,6 @@ public class SmartMeterServiceImpl implements SmartMeterService {
 
     @Override
     public void smartMeterReadings(String meterId, ReadingDto readingDto) throws Exception {
-        System.out.println(readingDto);
        try {
            if(Objects.nonNull(smartMeterDao.findSmartMeter(meterId))) {
                smartMeterDao.updateSmartMeterReading(meterId, readingDto);
@@ -147,7 +146,6 @@ public class SmartMeterServiceImpl implements SmartMeterService {
         List<HashMap<String, String>> smartMeters = new ArrayList<>();
         Consumer consumer = consumerDao.getConsumer(id);
         for(String meterId: consumer.getMeterId()) {
-            System.out.println(meterId);
             HashMap<String, String> meter = new HashMap<>();
             SmartMeter smartMeter = smartMeterDao.findSmartMeter(meterId);
             meter.put("meterId", smartMeter.getMeterId());
@@ -177,7 +175,6 @@ public class SmartMeterServiceImpl implements SmartMeterService {
                     Double kw = readings.get(i).getKw() + 0.0;
                     Provider provider = adminDao.findProvider(readings.get(i).getProvider());
                     totalReading += (kw * hours) * provider.getRate();
-                    System.out.println("total Reading" +"  " +totalReading);
                     previousTime+=1;
                 } else {
                     throw new Exception("Value not found");

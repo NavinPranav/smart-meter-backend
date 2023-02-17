@@ -4,6 +4,7 @@ import com.energy.smartmeter.dao.SmartMeterDao;
 import com.energy.smartmeter.dto.ReadingDto;
 import com.energy.smartmeter.entity.Provider;
 import com.energy.smartmeter.entity.SmartMeter;
+import com.mongodb.client.result.UpdateResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -49,12 +50,12 @@ public class SmartMeterDaoImpl implements SmartMeterDao {
 
     }
 
-    public void changeProvider(String smartMeterId, String providerName) {
+    public UpdateResult changeProvider(String smartMeterId, String providerName) {
         Query query = new Query();
         query.addCriteria(Criteria.where("meterId").is(smartMeterId));
         Update update = new Update();
         update.set("provider", providerName);
-        mongoTemplate.updateFirst(query, update, SmartMeter.class);
+        return mongoTemplate.updateFirst(query, update, SmartMeter.class);
     }
 
     @Override

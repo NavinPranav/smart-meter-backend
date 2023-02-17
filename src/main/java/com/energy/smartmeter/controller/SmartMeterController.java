@@ -69,6 +69,7 @@ public class SmartMeterController {
         ApiResponse response = new ApiResponse();
         try {
             String status = smartMeterService.changeSmartMeterStatus(smartMeterId, updateStatus);
+            response.setData(smartMeterService.getAllSmartMeters());
             response.setMessage(status);
             return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
         } catch (Exception e) {
@@ -83,6 +84,7 @@ public class SmartMeterController {
         try {
             String status = smartMeterService.changeProvider(smartMeterId, provider.getName());
             response.setMessage(status);
+            response.setData(smartMeterService.getAllSmartMeters());
             return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
         } catch (Exception e) {
             response.setMessage(String.valueOf(e));
@@ -100,7 +102,7 @@ public class SmartMeterController {
     @GetMapping("get-smart-meters/{id}")
     public ResponseEntity<ApiResponse> getSmartMetersById(@PathVariable String id) {
         ApiResponse response = new ApiResponse();
-        List<HashMap<String, String>> smartMeters =  smartMeterService.getSmartMeterById(id);
+        List<HashMap<String, String>> smartMeters = smartMeterService.getSmartMeterById(id);
         response.setData(smartMeters);
         return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
     }

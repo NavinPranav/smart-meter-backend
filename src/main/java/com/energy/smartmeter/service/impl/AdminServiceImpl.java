@@ -32,6 +32,7 @@ public class AdminServiceImpl implements AdminService {
         try {
             if (adminDao.findAdmin(adminDto) != null) {
                 Admin admin = adminDao.findAdmin(adminDto);
+                System.out.println(passwordEncoder.encode(adminDto.getPassword()) +  "---"  +admin.getPassword());
                 if(passwordEncoder.matches(adminDto.getPassword(), admin.getPassword())) {
                     return "Logged in success";
                 } else {

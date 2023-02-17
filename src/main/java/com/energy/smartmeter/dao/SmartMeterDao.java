@@ -4,6 +4,7 @@ import com.energy.smartmeter.dto.ReadingDto;
 import com.energy.smartmeter.dto.Status;
 import com.energy.smartmeter.entity.Provider;
 import com.energy.smartmeter.entity.SmartMeter;
+import com.mongodb.client.result.UpdateResult;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public interface SmartMeterDao {
 
     void updateStatus (String smartMeterId, String updateStatus);
 
-    void changeProvider(String smartMeterId, String providerName);
+    UpdateResult changeProvider(String smartMeterId, String providerName);
 
     List<SmartMeter> getAllSmartMeters();
 
